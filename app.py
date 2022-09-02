@@ -11,7 +11,7 @@ app = Flask(__name__)
 @cross_origin()
 def homePage():
     filelist = getFileList()
-    return filelist
+    return '<br>'.join(filelist)
     #return render_template("index.html")
 
 
