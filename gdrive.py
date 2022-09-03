@@ -38,7 +38,7 @@ def getFileList():
     file_list = drive.ListFile({'q': "'{}' in parents and trashed=false".format(getFolderId())}).GetList()
     for file in file_list:
         #print(file)
-        fileList.append('title: %s, id: %s shared:%s link: %s' % (file['title'], file['id'], file['shared'], file['alternateLink']))
+        fileList.append('title: %s, id: %s shared:%s <a href=%s>FileLink</a>' % (file['title'], file['id'], file['shared'], file['alternateLink']))
     return fileList
 
         
