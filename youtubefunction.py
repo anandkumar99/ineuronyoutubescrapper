@@ -9,9 +9,9 @@ def get_all_video_in_channel(channel_id, api_key):
     base_search_url = 'https://www.googleapis.com/youtube/v3/search?'
     loop_count = 0
     for_count = 0
-    first_url = base_search_url+'key={}&channelId={}&part=snippet,id&order=date&maxResults=10'.format(api_key, channel_id)
+    first_url = base_search_url+'key={}&channelId={}&part=snippet,id&order=date&maxResults=25'.format(api_key, channel_id)
     WAIT_PERIOD = 5
-    MAX_LINK = 5 #THIS WILL DECIDE HOW MANY VIDEOS TO BE DOWNLOADED
+    MAX_LINK = 15 #THIS WILL DECIDE HOW MANY VIDEOS TO BE DOWNLOADED
     video_count = 0
     video_data = []
     channel_url = first_url
@@ -57,7 +57,7 @@ def get_all_video_in_channel(channel_id, api_key):
                     video_url = base_video_url + i['id']['videoId']
                     video_like_data = scrape_info(video_url)
                     data = [title, description, thumbnailurl, video_url, video_like_data['views'], video_like_data['likes'], thumbnailurl]
-                    print(data)
+                    # print(data)
                     video_data.append(data)
 
         try:

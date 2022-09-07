@@ -32,10 +32,11 @@ def index():
             startIndex = content.index('https://www.youtube.com/feeds/videos.xml?')
             endIndex = content.index('"', startIndex)
             channelid = content[startIndex+52:endIndex]
-            print("channel id", channelid)
+            # print("channel id", channelid)
             conn = GetConnection()
+            EmptyChannelVideos(conn)
             channelvideos = get_all_video_in_channel(channelid, api_key)
-            print(channelvideos)
+            # print(channelvideos)
 
             deleteAllFilesInGDriveFolder()
             currdir = os.getcwd()
@@ -43,7 +44,7 @@ def index():
             if os.path.exists(SAVE_PATH):
                 shutil.rmtree(SAVE_PATH)
 
-            print(channelvideos)
+            # print(channelvideos)
             request_id = uuid.uuid4().hex
             for video in channelvideos:
                 filepath = SaveYouTubeVideo(video[3], request_id, SAVE_PATH)
@@ -56,7 +57,7 @@ def index():
             #               "Comment": custComment}
 
             videos = GetChannelVideos(conn)
-            print(videos)
+            # print(videos)
             return render_template('results.html', videos=videos[0:(len(videos)-1)])
         except Exception as e:
             print('The Exception message is: ',e)
