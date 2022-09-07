@@ -16,24 +16,30 @@
 
 <body>
 
-  <div class="table-users">
-   <div class="header">Reviews</div>
+
+   <div class="header">Videos</div>
 
    <table cellspacing="0">
       <tr>
-         <th>Product</th>
-         <th>Name</th>
-         <th>Rating</th>
-         <th>Comment Heading</th>
-         <th width="230">Comments</th>
+         <th>title</th>
+         <th>desc</th>
+         <th>youtuber</th>
+         <th>youtubelink</th>
+         <th>gdrivelink</th>
+         <th>like</th>
+         <th>comments</th>
+         <th>thumbnail</th>
       </tr>
-         {% for review in reviews %}
+         {% for review in videos %}
       <tr>
-          <td>{{review['Product']}}</td>
-         <td>{{review['Name']}}</td>
-         <td>{{review['Rating']}}</td>
-         <td>{{review['CommentHead']}}</td>
-         <td>{{review['Comment']}} </td>
+         <td>{{review['title']}}</td>
+         <td>{{review['desc']}}</td>
+         <td>{{review['youtuber']}}</td>
+         <td><a href="{{review['youtubelink']}}">YoutubeLink</a> </td>
+         <td><a href="{{review['gdrivelink']}}">GDriveLink</a>  </td>
+         <td>{{review['like']}} </td>
+         <td>{{review['comments']}} </td>
+         <td><img src="{{review['thumbnail']}}" </td>
        {% endfor %}
    </table>
 </div>

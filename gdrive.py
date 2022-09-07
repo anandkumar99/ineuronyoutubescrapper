@@ -1,3 +1,4 @@
+from fileinput import filename
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 import os
@@ -12,10 +13,17 @@ def getAuth():
     drive = GoogleDrive(gauth)  
     return gauth, drive      
 
+def deleteAllFilesInGDriveFolder():
+    gauth, drive = getAuth()     
+    file_list = drive.ListFile({'q': "'{}' in parents and trashed=false".format(getFolderId())}).GetList()
+    for file in file_list:
+        file.Delete()
+
 def uploadFile(filepath):
 
     gauth, drive = getAuth()
-    file1 = drive.CreateFile(metadata={"title": "myfile.jpg", "parents": [{"kind": 'drive#fileLink', "id": getFolderId()}]})
+    file_name = os.path.basename(filepath)
+    file1 = drive.CreateFile(metadata={"title": file_name, "parents": [{"kind": 'drive#fileLink', "id": getFolderId()}]})
     file1.SetContentFile(filepath)  # Set content of the file from given string.
     file1.Upload(param={'supportsTeamDrives': True})
 

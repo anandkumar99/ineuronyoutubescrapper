@@ -1,6 +1,7 @@
 .idea/
 env/
 test/
+video/
 __pycache__/
 *.csv
 .vscode
