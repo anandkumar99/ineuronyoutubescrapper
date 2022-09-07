@@ -63,8 +63,8 @@ def GetChannelVideos(conn):
     except Exception as e:
         print(e)
     return videosObj
-#conn = GetConnection()
-#MakeTableStructure(conn)
+conn = GetConnection()
+MakeTableStructure(conn)
 #InsertChannelVideo(conn, '17173647384', 'title of video1',
 #        'anand', 'www.youtube.com1', 'gdrive/video1', 128, 110)
 #GetChannelVideos(conn)

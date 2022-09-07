@@ -11,7 +11,7 @@ def get_all_video_in_channel(channel_id, api_key):
     for_count = 0
     first_url = base_search_url+'key={}&channelId={}&part=snippet,id&order=date&maxResults=10'.format(api_key, channel_id)
     WAIT_PERIOD = 5
-    MAX_LINK = 2 #THIS WILL DECIDE HOW MANY VIDEOS TO BE DOWNLOADED
+    MAX_LINK = 5 #THIS WILL DECIDE HOW MANY VIDEOS TO BE DOWNLOADED
     video_count = 0
     video_data = []
     channel_url = first_url
