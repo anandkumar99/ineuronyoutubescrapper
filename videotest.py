@@ -30,7 +30,10 @@ def SaveYouTubeVideo(youtubeLink, folderid, SAVE_PATH):
 
     try: 
         # download video from the YouTube 
-        return mp4files.download(output_path = SAVE_PATH) 
+        if mp4files.filesize() < 10000000:   #file must be smaller than 10mb
+            return mp4files.download(output_path = SAVE_PATH) 
+        else:
+            return "Some Error!"
     except: 
         return "Some Error!"
         
