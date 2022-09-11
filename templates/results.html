@@ -7,8 +7,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
 
-
-      <link rel="stylesheet" href="./style.css">
+   <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
 
@@ -16,30 +15,30 @@
 
 <body>
 
+   <table width="90%" align="center">
+      <tr><th>
+         VIDEOS
+      </th></tr>
+   </table>
 
-   <div class="header">Videos</div>
+        {% for review in videos %}
 
-   <table cellspacing="0">
-      <tr>
-         <th>title</th>
-         <th>desc</th>
-         <th>youtuber</th>
-         <th>youtubelink</th>
-         <th>gdrivelink</th>
-         <th>like</th>
-         <th>comments</th>
-         <th>thumbnail</th>
-      </tr>
-         {% for review in videos %}
-      <tr>
-         <td>{{review['title']}}</td>
-         <td>{{review['desc']}}</td>
-         <td>{{review['youtuber']}}</td>
-         <td><a href="{{review['youtubelink']}}">YoutubeLink</a> </td>
-         <td><a href="{{review['gdrivelink']}}">GDriveLink</a>  </td>
-         <td>{{review['like']}} </td>
-         <td>{{review['comments']}} </td>
-         <td><img src="{{review['thumbnail']}}" </td>
+      <table width="90%" align="center">
+         <tr>
+            <td width="5%"><img src="{{review['video_thumbnail']}}" </td>
+            <td width="70%">{{review['video_title']}}</td>
+            <td width="5%"><a target=_blank href="{{review['video_link']}}">YoutubeLink</a> </td>
+            <td width="5%"><a target=_blank href="{{review['gdrive_video_link']}}">GDriveLink</a>  </td>
+            <td width="5%">{{review['youtuber_name']}}</td>
+            <td width="5%">{{review['video_likes']}} Likes</td>
+            <td width="5%">{{review['video_comment_count']}} <a target=_blank href="/comments?video={{review['video_link']}}">Comments</a></td>
+         </tr>
+         <tr>
+            <td colspan=7>{{review['video_desc']}}</td>
+         </tr>
+      </table>
+      <br>
+
        {% endfor %}
    </table>
 </div>

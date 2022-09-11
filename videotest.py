@@ -5,12 +5,12 @@ def createFolder(folderpath):
     if not os.path.exists(folderpath):
         os.mkdir(folderpath)    
 
-def SaveYouTubeVideo(youtubeLink, folderid, SAVE_PATH):
+def SaveYouTubeVideo(youtubeLink, channel, SAVE_PATH):
     #where to save 
-
+    print(SAVE_PATH)
     createFolder(SAVE_PATH)
 
-    SAVE_PATH = os.path.join(SAVE_PATH, folderid)
+    SAVE_PATH = os.path.join(SAVE_PATH, channel)
     createFolder(SAVE_PATH)
     #link of the video to be downloaded    
     # for file in os.scandir(SAVE_PATH):
@@ -23,18 +23,22 @@ def SaveYouTubeVideo(youtubeLink, folderid, SAVE_PATH):
     except: 
         
         #to handle exception 
+        print("error to download : " , youtubeLink)
         return "Some Error!"
     
     #filters out all the files with "mp4" extension 
     mp4files = yt.streams.filter(progressive = True, file_extension = "mp4").get_lowest_resolution()
-
+   
     try: 
+        video_size = mp4files.filesize
+        print("video size ", video_size)
         # download video from the YouTube 
-        if mp4files.filesize() < 10000000:   #file must be smaller than 10mb
+        if video_size < 50000000:   #file must be smaller than 50mb
             return mp4files.download(output_path = SAVE_PATH) 
         else:
             return "Some Error!"
     except: 
         return "Some Error!"
         
-# SaveYouTubeVideo('https://www.youtube.com/watch?v=VQ9dSqtlBBc', 'oifeoituposdfs')
+#file = SaveYouTubeVideo('https://www.youtube.com/watch?v=Ub9lg4FWZBA','test channel', r'C:\Users\EI07949\Desktop\AI Training\Python\Project\YoutubeScrapper\video\test')
+#print(file)

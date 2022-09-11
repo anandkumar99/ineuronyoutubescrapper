@@ -19,7 +19,7 @@ def deleteAllFilesInGDriveFolder():
     for file in file_list:
         file.Delete()
 
-def uploadFile(filepath):
+def uploadFileToGDrive(filepath):
 
     gauth, drive = getAuth()
     file_name = os.path.basename(filepath)

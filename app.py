@@ -1,13 +1,9 @@
 from flask import Flask, render_template, request,jsonify
 from flask_cors import CORS,cross_origin
-import requests
-from bs4 import BeautifulSoup as bs
 from gdrive import *
 from youtubefunction import *
 from snowflakefunction import *
-from videotest import *
-import uuid
-import shutil
+from mongodbfunction import *
 
 app = Flask(__name__)
 
@@ -25,47 +21,30 @@ def index():
     api_key = "AIzaSyCvf13tx3l84ProkErs-KAePMIy3LVNZlE"
     if request.method == 'POST':
         try:
-            searchString = request.form['content'].replace(" ","")
-            channel = requests.get(searchString)
-            channel.encoding='utf-8'
-            content = channel.text
-            startIndex = content.index('https://www.youtube.com/feeds/videos.xml?')
-            endIndex = content.index('"', startIndex)
-            channelid = content[startIndex+52:endIndex]
-            # print("channel id", channelid)
+            channel = request.form['content'].replace(" ","")
             conn = GetConnection()
-            EmptyChannelVideos(conn)
-            channelvideos = get_all_video_in_channel(channelid, api_key)
-            # print(channelvideos)
+            data = GetChannelVideos(conn, channel)
 
-            deleteAllFilesInGDriveFolder()
-            currdir = os.getcwd()
-            SAVE_PATH = os.path.join(currdir, "video")
-            if os.path.exists(SAVE_PATH):
-                shutil.rmtree(SAVE_PATH)
-
-            # print(channelvideos)
-            request_id = uuid.uuid4().hex
-            for video in channelvideos:
-                filepath = SaveYouTubeVideo(video[3], request_id, SAVE_PATH)
-                if filepath != "Some Error!":
-                    filepath = uploadFile(filepath)
-                InsertChannelVideoInSnowflake(conn, request_id, video[0], video[1], '', video[3], filepath, video[4], video[5], video[6])
-
-       
-            #     mydict = {"Product": searchString, "Name": name, "Rating": rating, "CommentHead": commentHead,
-            #               "Comment": custComment}
-
-            videos = GetChannelVideos(conn)
-            # print(videos)
-            return render_template('results.html', videos=videos[0:(len(videos)-1)])
+            return render_template('results.html', videos=data[0:(len(data)-1)])
         except Exception as e:
             print('The Exception message is: ',e)
             return 'something is wrong'
-
-
     else:
         return render_template('index.html')
+
+@app.route('/comments',methods=['GET']) # route to show the review comments in a web UI
+@cross_origin()
+def comments():
+    print("got request")
+    try:
+        print("get url")
+        data = request.args
+        video_url = data['video']
+        comments, thumbnail = GetCommentsFromMongoDB(video_url)
+        return render_template('comments.html', comments=comments[0:(len(comments)-1)], thumbnail=thumbnail)
+    except Exception as e:
+        print('The Exception message is: ',e)
+        return 'something is wrong'
 
 if __name__ == "__main__":
     #app.run(host='127.0.0.1', port=8001, debug=True)

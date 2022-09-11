@@ -1,17 +1,18 @@
 from urllib.request import Request, urlopen
 import json
-from bs4 import BeautifulSoup as bs
 from time import sleep
-import requests
 
 def get_all_video_in_channel(channel_id, api_key):
+    MAX_LINK = 50 #THIS WILL DECIDE HOW MANY VIDEOS TO BE DOWNLOADED
+    page_size = 25
+    if page_size > MAX_LINK:
+        page_size = MAX_LINK
     base_video_url = 'https://www.youtube.com/watch?v='
     base_search_url = 'https://www.googleapis.com/youtube/v3/search?'
     loop_count = 0
     for_count = 0
-    first_url = base_search_url+'key={}&channelId={}&part=snippet,id&order=date&maxResults=25'.format(api_key, channel_id)
+    first_url = base_search_url+'key={}&channelId={}&part=snippet,id&order=date&maxResults={}'.format(api_key, channel_id, page_size)
     WAIT_PERIOD = 5
-    MAX_LINK = 5 #THIS WILL DECIDE HOW MANY VIDEOS TO BE DOWNLOADED
     video_count = 0
     video_data = []
     channel_url = first_url
@@ -36,10 +37,10 @@ def get_all_video_in_channel(channel_id, api_key):
             url=channel_url, 
             headers=hdr
         )
-        print(channel_url)
+        #print(channel_url)
         inp = urlopen(req)
         resp = json.load(inp)
-
+        #print(resp)
         for i in resp['items']:
             for_count = for_count + 1
             print("for count", for_count)
@@ -51,12 +52,12 @@ def get_all_video_in_channel(channel_id, api_key):
                     print("reached max link")
                     return video_data
                 else:
+                    youtuber = i['snippet']['channelTitle']
                     title = i['snippet']['title']
                     description = i['snippet']['description']
                     thumbnailurl = i['snippet']['thumbnails']['high']['url']
                     video_url = base_video_url + i['id']['videoId']
-                    video_like_data = scrape_info(video_url)
-                    data = [title, description, thumbnailurl, video_url, video_like_data['views'], video_like_data['likes'], thumbnailurl]
+                    data = [youtuber, title, description, thumbnailurl, video_url, thumbnailurl]
                     # print(data)
                     video_data.append(data)
 
@@ -67,37 +68,7 @@ def get_all_video_in_channel(channel_id, api_key):
             break
     return video_data
 
-# creating function
-def scrape_info(url):
-      
-    # getting the request from url
-    r = requests.get(url)
-      
-    # converting the text
-    s = bs(r.text, "html.parser")
-    
-    # finding meta info for title
-    title = s.find("meta", itemprop="name")['content']
-      
-    # finding meta info for views
-    views = s.find("meta", itemprop="interactionCount")['content']
-      
-    #duration = s.find("span", {"class": "ytp-time-duration"}).text
-
-    # finding meta info for likes
-    content = r.text
-    startLike = content.index('likes"}},"simpleText":"')
-    startLike = startLike + 23
-    endLike = content.index('"', startLike)
-    likes = content[startLike: endLike]
-      
-    # saving this data in dictionary
-    data = {'views':views, 'likes':likes}
-      
-    # returning the dictionary
-    return data
 
 #api_key = "AIzaSyCvf13tx3l84ProkErs-KAePMIy3LVNZlE"
 #print(get_all_video_in_channel('UCvVZ19DRSLIC2-RUOeWx8ug', api_key))
 
-#print(scrape_info("https://www.youtube.com/watch?time_continue=17&v=2wEA8nuThj8"))

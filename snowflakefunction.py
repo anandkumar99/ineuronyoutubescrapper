@@ -16,56 +16,65 @@ def GetConnection():
     return conn
 
 def MakeTableStructure(conn):
-    sql = "create or replace TABLE INEURON_DB.YOUTUBE_DATA.VIDEO_DETAIL (" +\
-        "REQUESTID VARCHAR(100), VIDEO_TITLE VARCHAR(250), VIDEO_DESC VARCHAR(1000), VIDEO_YOUTUBER VARCHAR(250)," +\
-        "VIDEO_LINK_YOUTUBE VARCHAR(250), VIDEO_LINK_GDRIVE VARCHAR(250), VIDEO_LIKES NUMBER(38,0)," +\
-        "VIDEO_COMMENT_COUNT NUMBER(38,0), VIDEO_THUMBNAIL_URL VARCHAR(250));"
+    sql = "create or replace TABLE INEURON_DB.YOUTUBE_DATA.YOUTUBERS (" +\
+        "id int identity(1, 1), youtuber_name VARCHAR(250), youtube_channel_url VARCHAR(250), video_link VARCHAR(250), video_comment VARCHAR(250), gdrive_video_link VARCHAR(250), " +\
+        "video_likes VARCHAR(250), video_comment_count NUMBER(38,0), video_title VARCHAR(250), video_desc VARCHAR(500), video_thumbnail VARCHAR(250));"
 
     cursor = conn.cursor()        
     cursor.execute(sql)
 
-def InsertChannelVideoInSnowflake(conn, request_id, video_title, video_desc, video_youtuber, video_youtube_link, video_link, video_comment_count, video_like_count, video_thumbnail_url):
+def InsertChannelVideoInSnowflake(conn, channel, channel_url, video_title, video_desc, video_youtube_link, video_gdrive_link, video_comment_count, video_like_count, video_thumbnail_url):
 
     try:    
 
-        sql = "INSERT INTO YOUTUBE_DATA.VIDEO_DETAIL(REQUESTID, "+\
-        "VIDEO_COMMENT_COUNT, VIDEO_LIKES, VIDEO_LINK_GDRIVE, VIDEO_LINK_YOUTUBE, "+\
-        "VIDEO_YOUTUBER, VIDEO_TITLE, VIDEO_DESC, VIDEO_THUMBNAIL_URL) VALUES('{}', {}, "+\
-        "{}, '{}', '{}', '{}', '{}', '{}','{}');"
-        sql = sql.format(request_id, video_comment_count,
-        video_like_count, video_link, video_youtube_link, 
-        video_youtuber, video_title, video_desc, video_thumbnail_url)
+        sql = "INSERT INTO YOUTUBE_DATA.YOUTUBERS("+\
+        "youtuber_name, youtube_channel_url, video_link, gdrive_video_link, video_likes, video_comment_count, video_title, video_desc, video_thumbnail) "+\
+        " VALUES('{}','{}','{}', '{}', '{}', {}, '{}', '{}','{}');"
+        sql = sql.format(channel, channel_url, video_youtube_link, video_gdrive_link, 
+        video_like_count, video_comment_count, video_title, video_desc, video_thumbnail_url)
         #print(sql)
         cursor = conn.cursor()        
         cursor.execute(sql)
-
-        # sql = "SELECT * FROM YOUTUBE_DATA.VIDEO_DETAIL;"
-        # cursor = conn.cursor()        
-        # cursor.execute(sql)
-        # for c in cursor:
-        #     print(c)
 
     except Exception as e:
         print(e)
 
 def EmptyChannelVideos(conn):
     try:    
-        sql = "Delete FROM YOUTUBE_DATA.VIDEO_DETAIL;"
+        sql = "Delete FROM YOUTUBE_DATA.YOUTUBERS;"
         cursor = conn.cursor()        
         cursor.execute(sql)
     except Exception as e:
         print(e)
 
-def GetChannelVideos(conn):
+def GetChannelVideosCount(conn, video, channel):
     try:    
-        sql = "SELECT * FROM YOUTUBE_DATA.VIDEO_DETAIL;"
+        sql = "SELECT * FROM YOUTUBE_DATA.YOUTUBERS where youtuber_name='" + channel + "' and video_link='" + video + "';"
         cursor = conn.cursor()        
         cursor.execute(sql)
 
         videosObj = []
         for c in cursor:
-            videoObj = {'requestid':c[0], 'title':c[1], 'desc':c[2], 'youtuber':c[3], 
-            'youtubelink':c[4], 'gdrivelink':c[5], 'like':c[6], 'comments':c[7], 'thumbnail':c[8]}
+            videoObj = {'id':c[0], 'youtuber_name':c[1], 'video_link':c[2]}
+            videosObj.append(videoObj)
+
+    except Exception as e:
+        print(e)
+    return len(videosObj)
+
+def GetChannelVideos(conn, channel_url):
+    videosObj = []
+    try:    
+        sql = "SELECT youtuber_name, youtube_channel_url, video_link, gdrive_video_link, video_likes, video_comment_count, video_title, video_desc, video_thumbnail FROM YOUTUBE_DATA.YOUTUBERS where youtube_channel_url='" + channel_url + "';"
+        cursor = conn.cursor()    
+        print(sql)    
+        cursor.execute(sql)
+
+
+        for c in cursor:
+            videoObj = {"youtuber_name":c[0], "youtube_channel_url":c[1], "video_link":c[2], 
+            "gdrive_video_link":c[3], "video_likes":c[4], "video_comment_count":c[5], 
+            "video_title":c[6], "video_desc":c[7], "video_thumbnail":c[8]}
             videosObj.append(videoObj)
 
     except Exception as e:
@@ -73,6 +82,7 @@ def GetChannelVideos(conn):
     return videosObj
 #conn = GetConnection()
 #MakeTableStructure(conn)
-#InsertChannelVideo(conn, '17173647384', 'title of video1',
-#        'anand', 'www.youtube.com1', 'gdrive/video1', 128, 110)
-#GetChannelVideos(conn)
+#InsertChannelVideoInSnowflake(conn, 'anand channel', 'this is video title', 'desc of video', 'www.youtube.com1', 'gdrive/video1', 128, 110,'thumbnail url')
+#print(GetChannelVideosCount(conn, 'https://www.youtube.com/watch?v=Ub9lg4FWZBA', 'Jie Jenn'))
+#data = GetChannelVideos(conn,'https://www.youtube.com/user/krishnaik06')
+#print(data)
